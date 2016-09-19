@@ -1,5 +1,5 @@
 var margin = {top: 80, right: 80, bottom: 80, left: 80},
-    width = 960 - margin.left - margin.right,
+    width = 640 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var parse = d3.time.format("%Y-%m").parse;
@@ -26,7 +26,7 @@ var line = d3.svg.line()
             }
       });
 
-d3.csv("data/data.csv", type, function(error, data) {
+d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
     if (error) throw error;
 
     var all = data.map(function(d) {
@@ -36,6 +36,13 @@ d3.csv("data/data.csv", type, function(error, data) {
                 'Trump': d['Trump'],
                 'Clinton': d['Clinton']
             }
+        }
+    });
+
+    var events = data.map(function(d) {
+        return {
+            'date': d.date,
+            'event': d['Events'],
         }
     });
 
@@ -56,7 +63,36 @@ d3.csv("data/data.csv", type, function(error, data) {
     });
 
     x.domain([values[0].date, values[values.length - 1].date]);
-    y.domain([0, d3.max(values, function(d) { return d.rate; })]).nice();
+    y.domain([d3.min(values, function(d) { if (d.rate > 0 ) { return d.rate;} }), d3.max(msft, function(d) { return d.rate; })]).nice();
+
+    var legend = d3.select("#legend")
+                    .selectAll('div')
+                    .data(CANDIDATES)
+                    .enter()
+                    .append('div')
+                    .attr('class', 'flex-box');
+
+    legend.append('div')
+        .attr('class', function(d) {
+            return 'color ' + d;
+        })
+        .style('background-color', function(d) {
+            return PARTY_COLOR[d];
+        });
+
+    legend.append('div')
+        .attr('class', function(d) {
+            return 'status ' + d;
+        })
+        .text(function(d) {
+            return PARTY_NAME[d] + ' ' + CANDIDATE_NAME_JP[d]
+        });
+
+    legend.append('div')
+        .attr('id', function(d) {
+            return 'approval-rate-' + d;
+        });
+
 
     var svg = d3.select("#draw-area")
         .append("svg")
@@ -99,6 +135,7 @@ d3.csv("data/data.csv", type, function(error, data) {
         })
         .attr('stroke-width', 2)
         .attr("opacity", 0);
+
 
     svg.selectAll('.line')
         .data([values, msft])
@@ -159,10 +196,16 @@ function type(d) {
 }
 
 function actionEvent(line, d) {
-    console.log(d.value);
     d3.selectAll('.guide').attr('opacity', 0);
-    if (d.value.Trump > 0) {
+    if (d.value.Trump > 0 && d.value.Clinton > 0) {
         d3.select(line).attr("opacity", 1);
-    }
+        console.log(d.value);
+        for (key in d.value){
+            console.log(key);
+            console.log(d.value[key]);
+            d3.select('#approval-rate-' + key)
+                .text(d.value[key] + '%');
+        }
 
+    }
 }

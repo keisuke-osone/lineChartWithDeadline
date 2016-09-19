@@ -13,8 +13,26 @@ path.area {
   fill: #e7e7e7;
 }
 
+#legend {
+  height: 80px;
+}
+
+#legend .color {
+  height: 30px;
+  margin: 5px;
+  width: 30px;
+}
+
+#legend .approval-rate {
+  height: 30px;
+}
+
 .axis {
   shape-rendering: crispEdges;
+}
+
+.flex-box {
+    display: flex;
 }
 
 .x.axis line {
