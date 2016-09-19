@@ -62,8 +62,12 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
     x.domain([values[0].date, values[values.length - 1].date]);
     y.domain([d3.min(values, function(d) { if (d.rate > 0 ) { return d.rate;} }), d3.max(msft, function(d) { return d.rate; })]).nice();
 
+    var targetDate = d3.select("#legend")
+                        .append('div')
+                        .attr('id', 'target-date');
+
     var legend = d3.select("#legend")
-                    .selectAll('div')
+                    .selectAll('.flex-box')
                     .data(CANDIDATES)
                     .enter()
                     .append('div')
@@ -249,6 +253,9 @@ function actionEvent(line, d) {
             d3.select('#approval-rate-' + key)
                 .text(d.value[key] + '%');
         }
-
+        var formatDay = d3.time.format('%Y/%m/%d');
+        date = new Date(d.date);
+        // date = new Date([parameters]);
+        d3.select('#target-date').text(formatDay(date));
     }
 }

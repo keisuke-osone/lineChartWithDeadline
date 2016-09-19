@@ -20,6 +20,11 @@ path.area {
   height: 80px;
 }
 
+#legend #target-date {
+  height: 30px;
+  margin: 5px;
+}
+
 #legend .color {
   height: 30px;
   margin: 5px;
@@ -28,7 +33,10 @@ path.area {
 
 #legend .approval-rate {
   height: 30px;
+  margin: 5px;
 }
+
+
 
 .axis {
   shape-rendering: crispEdges;
