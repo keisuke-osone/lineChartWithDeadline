@@ -1,13 +1,13 @@
 var margin = {top: 80, right: 80, bottom: 80, left: 80},
     width = 640 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 480 - margin.top - margin.bottom;
 
 var parse = d3.time.format("%Y-%m").parse;
 
 var x = d3.time.scale().range([0, width]),
     y = d3.scale.linear().range([height, 0]),
     xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true),
-    yAxis = d3.svg.axis().scale(y).ticks(4).orient("right");
+    yAxis = d3.svg.axis().scale(y).ticks(4).orient("left");
 
 var area = d3.svg.area()
     .interpolate("monotone")
@@ -108,7 +108,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
 
     svg.append("g")
       .attr("class", "y axis")
-      .attr("transform", "translate(" + width + ",0)")
+      // .attr("transform", "translate(" + width + ",0)")
       .call(yAxis);
 
 
@@ -143,7 +143,6 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .append('path')
             .attr('class', 'line')
             .style('stroke', function(d) {
-                console.log(d[0])
                 var color = '#000'
                 if (d[0].name == 'Clinton') {
                     color = '#00f'
