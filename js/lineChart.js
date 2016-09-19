@@ -2,11 +2,11 @@ var margin = {top: 20, right: 30, bottom: 80, left: 30},
     width = 640 - margin.left - margin.right,
     height = 380 - margin.top - margin.bottom;
 
-var parse = d3.time.format("%Y-%m").parse;
+var parse = d3.time.format("%m/%d").parse;
 
 var x = d3.time.scale().range([0, width]),
     y = d3.scale.linear().range([height, 0]),
-    xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true),
+    xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true).tickFormat(d3.time.format("%m/%d")),
     yAxis = d3.svg.axis().scale(y).ticks(4).orient("left");
 
 var area = d3.svg.area()
