@@ -1,6 +1,6 @@
-var margin = {top: 80, right: 80, bottom: 80, left: 80},
+var margin = {top: 20, right: 30, bottom: 80, left: 30},
     width = 640 - margin.left - margin.right,
-    height = 480 - margin.top - margin.bottom;
+    height = 380 - margin.top - margin.bottom;
 
 var parse = d3.time.format("%Y-%m").parse;
 
@@ -39,11 +39,8 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         }
     });
 
-    var events = data.map(function(d) {
-        return {
-            'date': d.date,
-            'event': d['Events'],
-        }
+    var events = data.filter(function(d) {
+        return d['Event'] != '';
     });
 
     var values = data.map(function(d) {
@@ -103,12 +100,11 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
 
     svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + (height + 10) + ")")
       .call(xAxis);
 
     svg.append("g")
       .attr("class", "y axis")
-      // .attr("transform", "translate(" + width + ",0)")
       .call(yAxis);
 
 
@@ -136,6 +132,55 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .attr('stroke-width', 2)
         .attr("opacity", 0);
 
+    var nearest_line = 0;
+    svg.selectAll('.events')
+        .data(events)
+        .enter()
+        .append('line')
+        .attr('stroke', '#333')
+        .attr('stroke-width', 0)
+        .attr('class', 'event')
+        .attr('x1', function (d) {
+            return x(d.date);
+        })
+        .attr('y1', 1)
+        .attr('x2', function (d) {
+            return x(d.date);
+        })
+        .attr('y2', height)
+        .attr('stroke-width', 2)
+        .attr("opacity", function (d) {
+            if (d.date > Date.now() && nearest_line == 0)  {
+                nearest_line = 1;
+                return 1;
+            }
+            return 0;
+        });
+
+    var nearest_name = 0;
+    svg.selectAll('.events-name')
+        .data(events)
+        .enter()
+        .append('text')
+        .attr('class', 'event-name')
+        .attr('x', function (d) {
+            return x(d.date) - d.Event.length * 14;
+        })
+        .attr('y', function (d, i) {
+            return height - i * 18 - 10;
+        })
+        .attr('height', 30)
+        .attr('width', 80)
+        .attr("opacity", function (d) {
+            if (d.date > Date.now() && nearest_name == 0)  {
+                nearest_name = 1;
+                return 1;
+            }
+            return 0;
+        })
+        .style('font-size', '14px')
+        .style('background-color', '#333')
+        .text(function(d){ return d.Event;});
 
     svg.selectAll('.line')
         .data([values, msft])
@@ -198,7 +243,6 @@ function actionEvent(line, d) {
     d3.selectAll('.guide').attr('opacity', 0);
     if (d.value.Trump > 0 && d.value.Clinton > 0) {
         d3.select(line).attr("opacity", 1);
-        console.log(d.value);
         for (key in d.value){
             console.log(key);
             console.log(d.value[key]);
