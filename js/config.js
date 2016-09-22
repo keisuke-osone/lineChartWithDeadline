@@ -21,3 +21,6 @@ var CANDIDATE_NAME_JP = {
 	'Clinton': 'ヒラリー',
 	'Trump'	: 'トランプ'
 }
+
+var DURATION = 6000;
+var DELAY = 400;

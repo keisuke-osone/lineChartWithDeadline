@@ -59,6 +59,8 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         candidatesApprovalRates.push(list);
     }
 
+    var min_date = candidatesApprovalRates[0][0].date;
+    var max_date = candidatesApprovalRates[0][candidatesApprovalRates[0].length - 1].date;
     x.domain([candidatesApprovalRates[0][0].date, candidatesApprovalRates[0][candidatesApprovalRates[0].length - 1].date]);
     y.domain([
         d3.min(candidatesApprovalRates, function(candidate) {
@@ -278,24 +280,37 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .style('fill', '#ffffff')
 
   var t = svg.transition()
-            .delay(550)
-            .duration(3000)
+            .delay(DELAY)
+            .duration(DURATION)
             .ease('linear')
             .each('end', function() {
               d3.select('line.guide')
                 .transition()
                 .style('opacity', 0)
                 .remove()
-            });
+            })
+            .tween("rates", tween_values);
 
     t.select('rect.curtain')
         .attr('width', 0);
     t.select('line.guide')
         .attr('transform', 'translate(' + width + ', 0)')
 
-    d3.select("#show_guideline").on("change", function(e) {
-        curtain.attr("opacity", this.checked ? 0.75 : 1);
-    })
+    function tween_values() {
+    var idx = d3.interpolateNumber(0, data.length);
+        return function(t){
+            values = data[parseInt(idx(t), 10)];
+            if (values.Trump > 0 && values.Clinton > 0) {
+                d3.select('#approval-rate-' + 'Trump')
+                        .text(values['Trump'] + '%');
+                d3.select('#approval-rate-' + 'Clinton')
+                        .text(values['Clinton'] + '%');
+                var formatDay = d3.time.format('%Y/%m/%d');
+                date = new Date(values['date']);
+                d3.select('#target-date').text(formatDay(date));
+            }
+        };
+    }
 });
 
 function type(d) {
