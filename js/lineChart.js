@@ -299,8 +299,8 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
 });
 
 function type(d) {
-  d.date = Date.parse(d["date"]);
-  return d;
+    d.date = Date.parse(d["date"]);
+    return d;
 }
 
 function actionEvent(line, d) {
