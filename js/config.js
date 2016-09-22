@@ -18,6 +18,6 @@ var PARTY_NAME = {
 
 // 候補者の名日本名
 var CANDIDATE_NAME_JP = {
-	'Clinton': 'ヒラリー・クリントン',
-	'Trump'	: 'ドナルド・トランプ'
+	'Clinton': 'ヒラリー',
+	'Trump'	: 'トランプ'
 }

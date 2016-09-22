@@ -1,6 +1,8 @@
+var char_span = 24;
+
 var margin = {top: 15, right: 30, bottom: 80, left: 30},
-    width = 640 - margin.left - margin.right,
-    height = 380 - margin.top - margin.bottom;
+    width = 360 - margin.left - margin.right,
+    height = 280 - margin.top - margin.bottom;
 
 var parse = d3.time.format("%m/%d").parse;
 
@@ -43,28 +45,27 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         return d['Event'] != '';
     });
 
-    var values = data.map(function(d) {
-        return {
-            'date': d.date,
-            'name': 'Trump',
-            'rate': d['Trump']
-          }
-    });
+    var candidatesApprovalRates = [];
+    for (i in CANDIDATES) {
+        var list = data.map(function(d) {
+                return {
+                    'date': d.date,
+                    'name': CANDIDATES[i],
+                    'rate': d[CANDIDATES[i]]
+                  }
+            });
+        candidatesApprovalRates.push(list);
+    }
 
-    var msft = data.map(function(d) {
-        return {
-            'date': d.date,
-            'name': 'Clinton',
-            'rate': d['Clinton']
-          }
-    });
-
-    x.domain([values[0].date, values[values.length - 1].date]);
-    y.domain([d3.min(values, function(d) { if (d.rate > 0 ) { return d.rate;} }), d3.max(msft, function(d) { return d.rate; })]).nice();
-
-    var targetDate = d3.select("#legend")
-                        .append('div')
-                        .attr('id', 'target-date');
+    x.domain([candidatesApprovalRates[0][0].date, candidatesApprovalRates[0][candidatesApprovalRates[0].length - 1].date]);
+    y.domain([
+        d3.min(candidatesApprovalRates, function(candidate) {
+            return d3.min(candidate, function(d) {if (d.rate > 0 ) { return d.rate;}})
+        }),
+        d3.max(candidatesApprovalRates, function(candidate) {
+            return d3.max(candidate, function(d) {if (d.rate > 0 ) { return d.rate;}})
+        }),
+    ]).nice();
 
     var legend = d3.select("#legend")
                     .selectAll('.flex-box')
@@ -72,6 +73,12 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
                     .enter()
                     .append('div')
                     .attr('class', 'flex-box');
+
+    
+    var targetDate = d3.select("#legend")
+                        .append('div')
+                        .attr('id', 'target-date');
+
 
     legend.append('div')
         .attr('id', function(d) {
@@ -103,7 +110,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
 
     svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + (height + 15) + ")")
+        .attr("transform", "translate(0," + (height + char_span) + ")")
         .call(xAxis)
         .selectAll("text")    
         .attr("transform", function(d) {
@@ -159,7 +166,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
             if (d.date > Date.now() && nearest_line == 0)  {
                 nearest_line = 1;
                 return 1;
-            } else if (d.Event == '１１/８　大統領選挙') {
+            } else if (d.Event == '１１/８　投票日') {
                 return 1;
             }
             return 0;
@@ -178,20 +185,20 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
             return x(d.date) - d.Event.length * 14;
         })
         .attr('y1', function (d, i) {
-            return height - i * 18 - 6;
+            return height - i * (char_span / 2) - char_span;
         })
         .attr('x2', function (d) {
             return x(d.date);
         })
         .attr('y2', function (d, i) {
-            return height - i * 18 - 6;
+            return height - i * (char_span / 2) - char_span;
         })
         .attr('stroke-width', 2)
         .attr("opacity", function (d) {
             if (d.date > Date.now() && nearest_under_line == 0)  {
                 nearest_under_line = 1;
                 return 1;
-            } else if (d.Event == '１１/８　大統領選挙') {
+            } else if (d.Event == '１１/８　投票日') {
                 return 1;
             }
             return 0;
@@ -204,10 +211,10 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .append('text')
         .attr('class', 'event-name')
         .attr('x', function (d) {
-            return x(d.date) - d.Event.length * 14;
+            return x(d.date) - d.Event.length * (char_span / 2);
         })
         .attr('y', function (d, i) {
-            return height - i * 18 - 10;
+            return height - i * (char_span / 2) - char_span - 2;
         })
         .attr('height', 30)
         .attr('width', 80)
@@ -215,17 +222,17 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
             if (d.date > Date.now() && nearest_name == 0)  {
                 nearest_name = 1;
                 return 1;
-            } else if (d.Event == '１１/８　大統領選挙') {
+            } else if (d.Event == '１１/８　投票日') {
                 return 1;
             }
             return 0;
         })
-        .style('font-size', '14px')
+        .style('font-size', (char_span / 2) + 'px')
         .style('background-color', '#777')
         .text(function(d){ return d.Event;});
 
     svg.selectAll('.line')
-        .data([values, msft])
+        .data(candidatesApprovalRates)
         .enter()
         .append('path')
             .attr('class', 'line')
@@ -284,8 +291,6 @@ function actionEvent(line, d) {
     if (d.value.Trump > 0 && d.value.Clinton > 0) {
         d3.select(line).attr("opacity", 1);
         for (key in d.value){
-            console.log(key);
-            console.log(d.value[key]);
             d3.select('#approval-rate-' + key)
                 .text(d.value[key] + '%');
         }
