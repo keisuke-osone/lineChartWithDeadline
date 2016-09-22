@@ -1,8 +1,10 @@
 var char_span = 24;
+var name_size = ((char_span / 2) - 3);
 
-var margin = {top: 15, right: 30, bottom: 80, left: 30},
+var margin = {top: 15 + (char_span), right: 30, bottom: 80, left: 30},
     width = 360 - margin.left - margin.right,
     height = 280 - margin.top - margin.bottom;
+    curtain_height = height + (char_span * 2)
 
 var parse = d3.time.format("%m/%d").parse;
 
@@ -156,7 +158,12 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .attr('x1', function (d) {
             return x(d.date);
         })
-        .attr('y1', 1)
+        .attr('y1', function (d) {
+            if (d.Event == '１１/８　投票日') {
+                return 0 - char_span;
+            }
+            return 0 - (char_span / 2);
+        })
         .attr('x2', function (d) {
             return x(d.date);
         })
@@ -182,16 +189,23 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .attr('stroke-width', 0)
         .attr('class', 'event')
         .attr('x1', function (d) {
-            return x(d.date) - d.Event.length * 14;
+            return x(d.date) - d.Event.length * name_size;
         })
         .attr('y1', function (d, i) {
-            return height - i * (char_span / 2) - char_span;
+            if (d.Event == '１１/８　投票日') {
+                return 0 - char_span + 6;
+            }
+            return 0 - (char_span / 2) + 8;
         })
         .attr('x2', function (d) {
             return x(d.date);
         })
         .attr('y2', function (d, i) {
-            return height - i * (char_span / 2) - char_span;
+            // return height - i * (char_span / 2) - char_span;
+            if (d.Event == '１１/８　投票日') {
+                return 0 - char_span + 6;
+            }
+            return 0 - (char_span / 2) + 8;
         })
         .attr('stroke-width', 2)
         .attr("opacity", function (d) {
@@ -211,10 +225,13 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         .append('text')
         .attr('class', 'event-name')
         .attr('x', function (d) {
-            return x(d.date) - d.Event.length * (char_span / 2);
+            return x(d.date) - d.Event.length * name_size;
         })
-        .attr('y', function (d, i) {
-            return height - i * (char_span / 2) - char_span - 2;
+        .attr('y', function (d) {
+            if (d.Event == '１１/８　投票日') {
+                return 0 - char_span + 4;
+            }
+            return 0 - (char_span / 2) + 4;
         })
         .attr('height', 30)
         .attr('width', 80)
@@ -227,7 +244,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
             }
             return 0;
         })
-        .style('font-size', (char_span / 2) + 'px')
+        .style('font-size', name_size + 'px')
         .style('background-color', '#777')
         .text(function(d){ return d.Event;});
 
@@ -254,7 +271,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
     var curtain = svg.append('rect')
         .attr('x', -1 * width)
         .attr('y', -1 * height)
-        .attr('height', height)
+        .attr('height', curtain_height)
         .attr('width', width)
         .attr('class', 'curtain')
         .attr('transform', 'rotate(180)')
