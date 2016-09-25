@@ -2,7 +2,7 @@ var char_span = 24;
 var name_size = ((char_span / 2) - 3);
 
 var margin = {top: 15 + (char_span), right: 30, bottom: 80, left: 30},
-    width = 360 - margin.left - margin.right,
+    width = document.documentElement.clientWidth - margin.left - margin.right;
     height = 280 - margin.top - margin.bottom;
     curtain_height = height + (char_span * 2)
 
