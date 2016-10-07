@@ -126,30 +126,7 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
       .call(yAxis);
 
 
-    svg.selectAll('.guide')
-        .data(all)
-        .enter()
-        .append('line')
-        .attr('stroke', '#333')
-        .attr('class', 'guide')
-        .attr('x1', function (d) {
-            return x(d.date);
-        })
-        .attr('y1', 1)
-        .attr('x2', function (d) {
-            return x(d.date);
-        })
-        .attr('y2', height)
-        .on('click', function(d) {
-            actionEvent(this, d);
-        })
-        .on('mouseover', function(d) {
-            actionEvent(this, d);
-        })
-        .attr('stroke-width', 1)
-        .attr("opacity", 0);
-
-    var nearest_line = 0;
+var nearest_line = 0;
     svg.selectAll('.events')
         .data(events)
         .enter()
@@ -182,6 +159,30 @@ d3.csv(DATA_PATH + "data.csv", type, function(error, data) {
         });
 
 
+    svg.selectAll('.guide')
+        .data(all)
+        .enter()
+        .append('line')
+        .attr('stroke', '#333')
+        .attr('class', 'guide')
+        .attr('x1', function (d) {
+            return x(d.date);
+        })
+        .attr('y1', 1)
+        .attr('x2', function (d) {
+            return x(d.date);
+        })
+        .attr('y2', height)
+        .on('click', function(d) {
+            actionEvent(this, d);
+        })
+        .on('mouseover', function(d) {
+            actionEvent(this, d);
+        })
+        .attr('stroke-width', 1)
+        .attr("opacity", 0);
+
+    
     var nearest_under_line = 0;
     svg.selectAll('.events')
         .data(events)
